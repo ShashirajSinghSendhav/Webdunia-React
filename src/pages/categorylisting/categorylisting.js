@@ -1,8 +1,8 @@
-import React from 'react';
-import './categorylisting.scss';
+import React from "react";
+import "./categorylisting.scss";
 
-import ads5 from '../../assets/img/ads5.png';
-import categoryimg1 from '../../assets/img/side_img1.png';
+import ads5 from "../../assets/img/ads5.png";
+import categoryimg1 from "../../assets/img/side_img1.png";
 
 // import cat_l_1 from '../../assets/img/listing/cat_l_1.jpg';
 // import cat_l_2 from '../../assets/img/listing/cat_l_2.jpg';
@@ -14,157 +14,95 @@ import categoryimg1 from '../../assets/img/side_img1.png';
 // import cat_l_8 from '../../assets/img/listing/cat_l_8.jpg';
 // import cat_l_9 from '../../assets/img/listing/cat_l_9.jpg';
 
-import article_image from '../../assets/img/article_image.png';
-import Coronawidget from '../../components/coronawidget/coronawidget';
-import Horroscope from '../../components/horroscope/horroscope';
-import MustRead from '../../components/MustRead/Mustread';
-import  Globals from '../../api' ;
+import article_image from "../../assets/img/article_image.png";
+import Coronawidget from "../../components/coronawidget/coronawidget";
+import Horroscope from "../../components/horroscope/horroscope";
+import MustRead from "../../components/MustRead/Mustread";
+import Globals from "../../api";
 
-
-
-export default class CategoryListing extends React.Component{
+export default class CategoryListing extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      categoryData : []
-     };
+      categoryData: [],
+    };
   }
 
   componentDidMount() {
     let url = window.location.pathname;
-    const categoryListURL= Globals.language_based_api+url;
+    const categoryListURL = Globals.language_based_api + url;
     fetch(categoryListURL)
-    .then((res) => res.json())
-    .then((data) => {
-        //console.log(data)
+      .then((res) => res.json())
+      .then((data) => {
         this.setState({
-            categoryData :data.Contents
-        })
-    })
+          categoryData: data.Contents,
+        });
+      });
   }
 
   convertToArr = (arr) => {
     let output = [];
     arr.forEach((value) => {
-      if(Array.isArray(value)){
+      if (Array.isArray(value)) {
         output = [...output, ...this.convertToArr(value)];
-      }else{
+      } else {
         output.push(value);
       }
     });
     return output;
-  }
-    render(){
-      let url = window.location.pathname;
-      let categoryList = this.state.categoryData;
-      let pagelistData = categoryList.filter((x)=>x.Type == "PageList" && x.ViewAllUrl == url);
-      let dataArray =[];
-      let dataList =[];
-      console.log("pagelistData",pagelistData);
-      // let pageData = pagelistData.map((item) => {
-      // pagelistData.push(item.Pages);
-      // });
-      pagelistData.forEach(element => {
-        
-        dataArray.push(element.Pages);
-      });
-      console.log("dataArray",dataArray);
-      
+  };
+  render() {
+    let url = window.location.pathname;
+    let categoryList = this.state.categoryData;
+    let pagelistData = categoryList.filter(
+      (x) => x.Type == "PageList" && x.ViewAllUrl == url
+    );
+    let dataArray = [];
+    pagelistData.forEach((element) => {
+      dataArray.push(element.Pages);
+    });
 
-      const shashi = this.convertToArr(dataArray);
-      console.log("shashi>",shashi);
+    let categoryArray = this.convertToArr(dataArray);
+    var topContent = categoryArray.slice(0, 3);
+    var listContent = categoryArray.slice(3);
 
-
-      dataArray.forEach((items) => {
-        // let a = Object.assign(dataList,items);
-        dataList.push(items);
-        // console.log("a???",a);
-      })
-      let listItem = [];
-      dataList.map((item) => {
-        listItem.push(item);
-      })
-      console.log("dataList?????",dataList);
-      console.log("listItem?????",listItem);
-      // debugger;
-      let dataItem = pagelistData.slice(0,1);
-
-      let topListData = dataItem.map((item,i) => 
-      <div>
-        {item.Pages.slice(0,3).map((item, i ) => 
-              <li>
-              <a href="#">
-                  <img className="img-fluid" src={item.Thumbnail}/>
-                  <h2>{item.Title}</h2>
-              </a>
-          </li>
-        )}
-        </div>
-      )
-      let listData = dataItem.map((item,i) => 
-      <div>
-        {item.Pages.slice(3).map((item, i ) => 
-        
+    let topListData = topContent.map((item, i) => (
+      <li>
+        <a href="#">
+          <img className="img-fluid" src={item.Thumbnail || item.Image} />
+          <h2>{item.Title}</h2>
+        </a>
+      </li>
+    ));
+    let listData = listContent.map((item, i) => (
+      // <div>
       <div className="listing_block">
-                                  <div className="l_thumb_col">
-                                    <a href="#"><img src={item.Thumbnail}/></a>
-                                  </div>
-                                  <div className="l_info_col">
-                                    <h2><a href="#">{item.Title}</a></h2>
-                                    <span className="l_arti_date">Updated: <b>{item.PublishDate}</b></span>
-                                    {/* <span className="l_arti_written">Edited by: <b>तूलिका कुशवाहा</b></span> */}
-                                    <div className="l_arti_cont">
-                                    {item.Description}
-                                    </div>
-                                  </div>
-                              </div>
-          )}
-          {/* {
-            let topNews =item.Pages.slice(0,3).map((item, i ) => {
-                                      <li>
-                                          <a href="#">
-                                              <img className="img-fluid" src={item.Thumbnail}/>
-                                              <h2>{item.Title}</h2>
-                                          </a>
-                                          
-                                      </li>
-            })
-          } */}
+        <div className="l_thumb_col">
+          <a href="#">
+            <img src={item.Thumbnail || item.Image} />
+          </a>
+        </div>
+        <div className="l_info_col">
+          <h2>
+            <a href="#">{item.Title}</a>
+          </h2>
+          {/* <span className="l_arti_date">Updated: <b>{item.PublishDate}</b></span> */}
+          {/* <span className="l_arti_written">Edited by: <b>तूलिका कुशवाहा</b></span> */}
+          <div className="l_arti_cont">{item.Description}</div>
+        </div>
       </div>
-      
-        // <div className="listing_block">
-        //                           <div className="l_thumb_col">
-        //                             <a href="#"><img src={item.Thumbnail}/></a>
-        //                           </div>
-        //                           <div className="l_info_col">
-        //                             <h2><a href="#">{item.Title}</a></h2>
-        //                             <span className="l_arti_date">Updated: <b>{item.PublishDate}</b></span>
-        //                             {/* <span className="l_arti_written">Edited by: <b>तूलिका कुशवाहा</b></span> */}
-        //                             <div className="l_arti_cont">
-        //                             {item.Description}
-        //                             </div>
-        //                           </div>
-        //                       </div>
-                          );
-                          console.log("listData<<<<<<<<",listData)
-      // console.log("pageData>>>>>>>>>",pageData);
-      // let b = [];
-      // a.map((item,i) => {
-      //   b.push(item);
-      // })
-      // console.log("b>>>>>>>>>",b);
-      // console.log("pageData >>>>>",pageData);
+    ));
 
-        return(
-            <div>
-                <div className="container padding15">
-                    <div className="row">
-                        <div className="col">
-                            <div className="aritcle_container">
-                              
-                              <div className="listing_top_sect">
-                                  <ul>{topListData}
-                                      {/* <li>
+    return (
+      <div>
+        <div className="container padding15">
+          <div className="row">
+            <div className="col">
+              <div className="aritcle_container">
+                <div className="listing_top_sect">
+                  <ul>
+                    {topListData}
+                    {/* <li>
                                           <a href="#">
                                               <img className="img-fluid" src={cat_l_2}/>
                                               <h2>केजरीवाल ने कहा- UK से आने वाली फ्लाइट्‍स रोके सरकार</h2>
@@ -183,11 +121,11 @@ export default class CategoryListing extends React.Component{
                                               <h2>चुनिंदा देशों के बीच नहीं हो सकती वैश्विक विकास पर चर्चा : मोदी</h2>
                                           </a>
                                       </li> */}
-                                  </ul>
-                              </div>
-                              {/* <div className="listing_block"> */}
-                              {listData}
-                                  {/* <div className="l_thumb_col">
+                  </ul>
+                </div>
+                {/* <div className="listing_block"> */}
+                {listData}
+                {/* <div className="l_thumb_col">
                                     <a href="#"><img src={cat_l_4}/></a>
                                   </div>
                                   <div className="l_info_col">
@@ -198,9 +136,9 @@ export default class CategoryListing extends React.Component{
                                     नई दिल्ली। भाजपा अध्यक्ष जेपी नड्डा के काफिले पर हमले के बाद गृहमंत्री अमित शाह 20 दिसंबर को 2 दिवसीय दौरे पर पश्चिम बंगाल जा रहे हैं। इस बीच राज्यपाल जगदीश धनगर ने भाजपा अध्‍यक्ष जेपी नड्डा के काफिले पर हुए हमले पर अपनी रिपोर्ट केंद्र सरकार को सौंप ...
                                     </div>
                                   </div> */}
-                              {/* </div> */}
+                {/* </div> */}
 
-                              {/* <div className="listing_block">
+                {/* <div className="listing_block">
                                   <div className="l_thumb_col">
                                     <a href="#"><img src={cat_l_5}/></a>
                                   </div>
@@ -273,23 +211,23 @@ export default class CategoryListing extends React.Component{
                                   </div>
                               </div>
                                 */}
-
-                            </div>
-                            
-                        </div>
-                        <div className="col right_side_bar">
-                            
-                            <div className="ads_block m-b-15"><img src={ads5} /></div>
-                            <MustRead/>
-                            <div className="m-t-15"></div>
-                            <Horroscope/>
-                            <div className="ads_block m-b-15 m-t-15"><img src={ads5} /></div>
-                            <Coronawidget/>
-                        </div>
-                    </div>
-                </div>
+              </div>
             </div>
-        )
-    }
+            <div className="col right_side_bar">
+              <div className="ads_block m-b-15">
+                <img src={ads5} />
+              </div>
+              <MustRead />
+              <div className="m-t-15"></div>
+              <Horroscope />
+              <div className="ads_block m-b-15 m-t-15">
+                <img src={ads5} />
+              </div>
+              <Coronawidget />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 }
-
